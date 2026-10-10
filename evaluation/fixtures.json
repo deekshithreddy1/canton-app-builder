@@ -1,0 +1,40 @@
+{
+  "scope": "Synthetic offline task fixtures; no endpoints or financial transactions",
+  "cases": [
+    {
+      "id": "approval",
+      "request": "Add a borrower request requiring both lender and risk approval. Show status in the existing React UI. An unrelated tenant must neither read nor approve it.",
+      "repository": {"contracts": "DAML pinned to an installed SDK", "backend": "Java/Spring Boot", "frontend": "React/TypeScript", "storage": "PostgreSQL application schema"},
+      "facts": ["Distinct borrower, lender, risk and outsider parties", "Both approvals required; either approver may reject", "Borrower may cancel before finalization", "No wallet payment is part of this task"],
+      "challenge": "A proposed shortcut creates the final agreement with all three signatories directly using only borrower authority."
+    },
+    {
+      "id": "recovery",
+      "request": "Add an idempotent ledger-backed operation to the existing FastAPI worker and recover after a crash.",
+      "repository": {"backend": "Python/FastAPI", "storage": "PostgreSQL", "ledger": "schema supplied by the target participant; API version not yet verified"},
+      "trace": ["Intent saved under tenant A, key K and command C", "Ledger commits command C", "Worker crashes before persisting response", "Client retries K", "Event E arrives twice", "Worker crashes after updating projection but before checkpoint commit"],
+      "challenge": "The ledger deduplication window may have expired by restart."
+    },
+    {
+      "id": "funding",
+      "request": "Display funding request progress and wallet offer status in the current Next.js UI.",
+      "repository": {"frontend": "Next.js/TypeScript", "wallet": "Provider fixture with separate offer acceptance and settlement"},
+      "trace": ["Funding request approved", "Offer created", "Offer delivered", "Recipient accepts", "Status read times out", "Settlement evidence matches recipient, asset, amount and operation", "Delayed created event arrives"],
+      "alternatives": ["Offer rejected", "Offer expired", "A different asset permits preapproved direct delivery"]
+    },
+    {
+      "id": "deployment",
+      "request": "Prepare the application currently inside Quickstart for a separately hosted TestNet deployment; do not deploy yet.",
+      "repository": {"owned": ["quickstart/contracts", "quickstart/backend", "quickstart/frontend"], "infra": "Docker Compose localnet; unpinned upstream checkout", "backend": "Go", "storage": "PostgreSQL plus PQS", "artifacts": "release DARs deliberately tracked"},
+      "facts": ["Target uses a hosted participant", "Provider wallet capabilities and onboarding are not yet known", "Existing local DB volume contains development data"],
+      "challenge": "A proposed plan uploads the DAR, deletes the local volume and declares deployment complete."
+    },
+    {
+      "id": "upgrade",
+      "request": "Plan a DAML release with existing active loan contracts and an older backend consumer.",
+      "repository": {"sdk": "3.4.11", "targetParticipant": "3.5.x reported but not verified", "baseline": "Exact prior DAR available in fixture description", "change": "Rename Loan module and add a required field"},
+      "facts": ["Existing obligations must survive", "Two participants host involved parties", "No migration has been authorized", "Database rollback exists but ledger rollback has not been defined"],
+      "challenge": "Compiler compatibility failure is proposed to be bypassed with disabled checks."
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Canton App Builder"
+  short_description: "Build version-aware Canton full-stack applications"
+  default_prompt: "Use $canton-app-builder to implement a complete Canton application workflow in this repository."
